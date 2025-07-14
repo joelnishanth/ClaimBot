@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - '3000:3000'
+    environment:
+      - NEXT_TELEMETRY_DISABLED=1
+    command: npm run dev
+
+  listing_context:
+    build: ./backend/listing_context
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+    depends_on:
+      - db
+    ports:
+      - '8000:8000'
+
+  scanner_context:
+    build: ./backend/scanner_context
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+      - LISTING_CONTEXT_URL=http://listing_context:8000
+    depends_on:
+      - listing_context
+      - db
+    ports:
+      - '8001:8001'
+
+  dmca_context:
+    build: ./backend/dmca_context
+    environment:
+      - LISTING_CONTEXT_URL=http://listing_context:8000
+    depends_on:
+      - listing_context
+    ports:
+      - '8002:8002'
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
