@@ -1,7 +1,6 @@
-version: '3.8'
 services:
   frontend:
-    build: ./frontend
+    build: ./frontend/
     ports:
       - '3000:3000'
     environment:
@@ -9,7 +8,7 @@ services:
     command: npm run dev
 
   listing_context:
-    build: ./backend/listing_context
+    build: ./backend/listing_context/
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
     depends_on:
@@ -18,7 +17,7 @@ services:
       - '8000:8000'
 
   scanner_context:
-    build: ./backend/scanner_context
+    build: ./backend/scanner_context/
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
       - LISTING_CONTEXT_URL=http://listing_context:8000
@@ -29,7 +28,7 @@ services:
       - '8001:8001'
 
   dmca_context:
-    build: ./backend/dmca_context
+    build: ./backend/dmca_context/
     environment:
       - LISTING_CONTEXT_URL=http://listing_context:8000
     depends_on:
